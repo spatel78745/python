@@ -37,6 +37,7 @@ for child in mainframe.winfo_children():
   child.grid_configure(padx = 5, pady = 5)
 
 feet_entry.focus()
+# This event->function binding applies to every child widget
 root.bind('<Return>', calculate)
 
 root.mainloop()
