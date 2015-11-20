@@ -18,30 +18,31 @@ canvas['height'] = CANVAS_HEIGHT
 
 canvas.grid(column = 0, row = 0, sticky=(N, W, E, S))
 
-def circle(x, y, r):
+''' Draws a circle at (x, y, r)'''
+def draw_circle(circle):
   global canvas
-  canvas.create_oval(x-r, y-r, x+r, y+r) 
+  x, y, r = circle[0], circle[1],  circle[2]
+  canvas.create_oval(x - r, y - r, x + r, y + r) 
 
-def rad(deg):
-  return math.pi / 180 * deg
+''' Converts degrees to radians'''
+def rad(degrees):
+  return math.pi / 180 * degrees
 
-def xr(theta, x, y, r):
+''' 
+Returns a point (x,y) on circle that's at an angle of theta degrees to the x-axis
+'''
+def point_on_circle(theta, circle):
   theta = rad(theta)
-  return r * math.cos(theta) + x
+  x, y, r = circle[0], circle[1], circle[2]
+  return (r * math.cos(theta) + x, y - r * math.sin(theta))
 
-def yr(theta, x, y, r):
-  theta = rad(theta)
-  return y - r * math.sin(theta)
+def plot_point_on_circle(theta, point_size = (CANVAS_WIDTH / 2, CANVAS_WIDTH / 2, r = 75):
+  point = point_on_circle(theta, point_size[0], point_size[1], point_size[2])
+  circle(point, 5)
 
-def plotr(theta, x = CANVAS_WIDTH / 2, y = CANVAS_WIDTH / 2, r = 75):
-#  theta = rad(theta)
-#  xr = r * math.cos(theta) + x
-#  yr = y - r * math.sin(theta)
-  circle(xr(theta, x, y, r), yr(theta, x, y, r), 5)
-
-def testPlotr():
+def test_plot_point_on_circle():
   for theta in range(0, 360):
-    plotr(theta)
+    plot_point_on_circle(theta)
 
 #def node(theta = 30, radius = 50, x = CANVAS_WIDTH / 2, y = CANVAS_WIDTH / 2, len = 50):
 #  rc_theta = rad(-90 + 0.5 * theta)
