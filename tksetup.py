@@ -19,7 +19,7 @@ canvas['height'] = CANVAS_HEIGHT
 canvas.grid(column = 0, row = 0, sticky=(N, W, E, S))
 
 ''' Draws a circle at (x, y, r)'''
-def draw_circle(circle):
+def drawCircle(circle):
   global canvas
   x, y, r = circle[0], circle[1],  circle[2]
   canvas.create_oval(x - r, y - r, x + r, y + r) 
@@ -31,18 +31,24 @@ def rad(degrees):
 ''' 
 Returns a point (x,y) on circle that's at an angle of theta degrees to the x-axis
 '''
-def point_on_circle(theta, circle):
+def pointOnCircle(theta, circle):
   theta = rad(theta)
   x, y, r = circle[0], circle[1], circle[2]
   return (r * math.cos(theta) + x, y - r * math.sin(theta))
 
-def plot_point_on_circle(theta, point_size = (CANVAS_WIDTH / 2, CANVAS_WIDTH / 2, r = 75):
-  point = point_on_circle(theta, point_size[0], point_size[1], point_size[2])
-  circle(point, 5)
+'''
+Plots a dot on the circumference of a circle
+- originX, originY: The origin of the circle
+-                r: The radius of the dot
+'''
+def plotDotOnCircle(theta, circle = (CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50), dotRadius = 5):
+# Calculate the center of the dot
+  center = pointOnCircle(theta, circle)
+  drawCircle((center[0], center[1], dotRadius))
 
-def test_plot_point_on_circle():
+def testPlotDotOnCircle():
   for theta in range(0, 360):
-    plot_point_on_circle(theta)
+    plotDotOnCircle(theta)
 
 #def node(theta = 30, radius = 50, x = CANVAS_WIDTH / 2, y = CANVAS_WIDTH / 2, len = 50):
 #  rc_theta = rad(-90 + 0.5 * theta)
@@ -50,6 +56,6 @@ def test_plot_point_on_circle():
 #  rc_x = radius * math.cos(rc_theta) + x;
 
 
-testPlotr()
+testPlotDotOnCircle()
 #circle(200, 200, 20)
 
