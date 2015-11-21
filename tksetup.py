@@ -7,8 +7,8 @@ import math
 #
 CANVAS_WIDTH = 400
 CANVAS_HEIGHT = 400
-RADIUS = 20
-PAD = 5
+RADIUS = 8 
+PAD = 4
 
 root = Tk()
 root.columnconfigure(0, weight = 1)
@@ -70,22 +70,31 @@ def node_old(childTheta = 40, nodeCircle = (CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2,
   x2 = x1 - len * math.cos(rad(childTheta))
   canvas.create_line(x1, y1, x2, y2)
 
-def center(row, col):
-  box_size = 2 * RADIUS + PAD
-  x = box_size * row
-  y = box_size * col
+def box_center(row, col):
+  box_size = 2 * RADIUS + 2 * PAD
+  x = box_size * col
+  y = box_size * row
   xc = x + PAD + RADIUS
   yc = y + PAD + RADIUS
 
   return (xc, yc)
 
-def drawNode(row, col, radius = 20, pad = 5):
-  xc, yc = center(row, col) 
-  drawCircle((xc, yc, radius))
+def box_size():
+  return 2 * PAD + 2 * RADIUS
+
+def row_to_x(row):
+  return box_size() * row
+
+def col_to_y(col):
+  return box_size * col
+
+def drawNode(row, col):
+  xc, yc = box_center(row, col) 
+  drawCircle((xc, yc, RADIUS))
 
 def drawLeftLeg(row1, col1, row2, col2):
-  xc1, yc1 = center(row1, col1)
-  xc2, yc2 = center(row2, col2)
+  xc1, yc1 = box_center(row1, col1)
+  xc2, yc2 = box_center(row2, col2)
   m = (yc2 - yc1) / (xc2 - xc1)
   theta = abs(math.atan(m))
   print('theta = ', theta)
@@ -97,8 +106,8 @@ def drawLeftLeg(row1, col1, row2, col2):
 #  canvas.create_line(xc1, yc1, xc2, yc2)
 
 def drawRightLeg(row1, col1, row2, col2):
-  xc1, yc1 = center(row1, col1)
-  xc2, yc2 = center(row2, col2)
+  xc1, yc1 = box_center(row1, col1)
+  xc2, yc2 = box_center(row2, col2)
   m = (yc2 - yc1) / (xc2 - xc1)
   theta = abs(math.atan(m))
   print('theta = ', theta)
@@ -117,11 +126,36 @@ def testDrawNode():
       drawNode(row, col)
 
 def testDrawLeg():
-  drawNode(4, 0)
-  drawNode(2, 2)
-  drawNode(6, 2)
-  drawLeftLeg(4, 0, 2, 2) 
-  drawRightLeg(4, 0, 6, 2) 
+  max_col = CANVAS_WIDTH / box_size()
+  max_row = CANVAS_HEIGHT / box_size()
+  center_row = (max_col / 2, max_row / 2)
+  print(max_col, max_row, center_row)
+
+  cx = center_row[0]
+  drawNode(0, cx)
+
+  cx1 = cx / 2
+  drawNode(1, cx - cx1)
+  drawNode(1, cx + cx1)
+  drawLeftLeg(0, cx, 1, cx - cx1)
+  drawRightLeg(0, cx, 1, cx + cx1)
+
+  cx2 = cx1 / 2
+  drawNode(2, cx - cx1 - cx2)
+  drawNode(2, cx - cx1 + cx2)
+  drawLeftLeg(1, cx - cx1, 2, cx - cx1 - cx2)
+  drawRightLeg(1, cx - cx1, 2, cx - cx1 + cx2)
+
+  drawNode(2, cx + cx1 - cx2)
+  drawNode(2, cx + cx1 + cx2)
+  drawLeftLeg(1, cx + cx1, 2, cx + cx1 - cx2)
+  drawRightLeg(1, cx + cx1, 2, cx + cx1 + cx2)
+
+#  drawNode(6, 2)
+#  drawNode(18, 2)
+#  drawNode(31, 2)
+#  drawNode(42, 2)
+
 
 testDrawLeg()
 
