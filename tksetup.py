@@ -5,9 +5,9 @@ import math
 #
 # Config
 #
-CANVAS_WIDTH = 400
-CANVAS_HEIGHT = 400
-RADIUS = 8 
+CANVAS_WIDTH = 800
+CANVAS_HEIGHT = 800
+RADIUS = 12 
 PAD = 4
 
 root = Tk()
@@ -94,12 +94,13 @@ def drawNode(row, col):
 
 def drawLeftLeg(row1, col1, row2, col2):
   xc1, yc1 = box_center(row1, col1)
+  drawCircle((xc1, yc1, RADIUS))
   xc2, yc2 = box_center(row2, col2)
   m = (yc2 - yc1) / (xc2 - xc1)
   theta = abs(math.atan(m))
   print('theta = ', theta)
-  x1 = xc1 - RADIUS * math.cos(180 - 90 - theta)
-  y1 = yc1 + RADIUS * math.sin(180 - 90 - theta)
+  x1 = xc1 - RADIUS * math.sin(180 - 90 - theta)
+  y1 = yc1 + RADIUS * math.cos(180 - 90 - theta)
   x2 = xc2 + RADIUS * math.cos(theta)
   y2 = yc2 - RADIUS * math.sin(theta)
   canvas.create_line(x1, y1, x2, y2)
@@ -111,8 +112,8 @@ def drawRightLeg(row1, col1, row2, col2):
   m = (yc2 - yc1) / (xc2 - xc1)
   theta = abs(math.atan(m))
   print('theta = ', theta)
-  x1 = xc1 + RADIUS * math.cos(180 - 90 - theta)
-  y1 = yc1 + RADIUS * math.sin(180 - 90 - theta)
+  x1 = xc1 + RADIUS * math.sin(180 - 90 - theta)
+  y1 = yc1 + RADIUS * math.cos(180 - 90 - theta)
   x2 = xc2 - RADIUS * math.cos(theta)
   y2 = yc2 - RADIUS * math.sin(theta)
   canvas.create_line(x1, y1, x2, y2)
