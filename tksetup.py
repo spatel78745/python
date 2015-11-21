@@ -50,7 +50,7 @@ def testPlotDotOnCircle():
   for theta in range(0, 360):
     plotDotOnCircle(theta)
 
-def node(childTheta = 40, nodeCircle = (CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50), len = 50):
+def node_old(childTheta = 40, nodeCircle = (CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50), len = 50):
   global canvas
 
 # Draw node
@@ -68,7 +68,23 @@ def node(childTheta = 40, nodeCircle = (CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 50)
   x2 = x1 - len * math.cos(rad(childTheta))
   canvas.create_line(x1, y1, x2, y2)
 
-node()
+def drawNode(row, col, radius = 20, pad = 5):
+  box_size = 2 * radius + pad
+  x = box_size * row
+  y = box_size * col
+  xr = x + pad + radius
+  yr = y + pad + radius
+  drawCircle((xr, yr, radius))
+
+def testDrawNode():
+  box_size = 25
+  max_cols = int(CANVAS_WIDTH / box_size)
+  max_rows = int(CANVAS_HEIGHT / box_size)
+  for row in range(0, max_rows):
+    for col in range(0, max_cols):
+      drawNode(row, col)
+
+testDrawNode()
 # testPlotDotOnCircle()
 #circle(200, 200, 20)
 
