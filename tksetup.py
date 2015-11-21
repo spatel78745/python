@@ -7,6 +7,8 @@ import math
 #
 CANVAS_WIDTH = 400
 CANVAS_HEIGHT = 400
+RADIUS = 20
+PAD = 5
 
 root = Tk()
 root.columnconfigure(0, weight = 1)
@@ -68,13 +70,43 @@ def node_old(childTheta = 40, nodeCircle = (CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2,
   x2 = x1 - len * math.cos(rad(childTheta))
   canvas.create_line(x1, y1, x2, y2)
 
-def drawNode(row, col, radius = 20, pad = 5):
-  box_size = 2 * radius + pad
+def center(row, col):
+  box_size = 2 * RADIUS + PAD
   x = box_size * row
   y = box_size * col
-  xr = x + pad + radius
-  yr = y + pad + radius
-  drawCircle((xr, yr, radius))
+  xc = x + PAD + RADIUS
+  yc = y + PAD + RADIUS
+
+  return (xc, yc)
+
+def drawNode(row, col, radius = 20, pad = 5):
+  xc, yc = center(row, col) 
+  drawCircle((xc, yc, radius))
+
+def drawLeftLeg(row1, col1, row2, col2):
+  xc1, yc1 = center(row1, col1)
+  xc2, yc2 = center(row2, col2)
+  m = (yc2 - yc1) / (xc2 - xc1)
+  theta = abs(math.atan(m))
+  print('theta = ', theta)
+  x1 = xc1 - RADIUS * math.cos(180 - 90 - theta)
+  y1 = yc1 + RADIUS * math.sin(180 - 90 - theta)
+  x2 = xc2 + RADIUS * math.cos(theta)
+  y2 = yc2 - RADIUS * math.sin(theta)
+  canvas.create_line(x1, y1, x2, y2)
+#  canvas.create_line(xc1, yc1, xc2, yc2)
+
+def drawRightLeg(row1, col1, row2, col2):
+  xc1, yc1 = center(row1, col1)
+  xc2, yc2 = center(row2, col2)
+  m = (yc2 - yc1) / (xc2 - xc1)
+  theta = abs(math.atan(m))
+  print('theta = ', theta)
+  x1 = xc1 + RADIUS * math.cos(180 - 90 - theta)
+  y1 = yc1 + RADIUS * math.sin(180 - 90 - theta)
+  x2 = xc2 - RADIUS * math.cos(theta)
+  y2 = yc2 - RADIUS * math.sin(theta)
+  canvas.create_line(x1, y1, x2, y2)
 
 def testDrawNode():
   box_size = 25
@@ -84,7 +116,16 @@ def testDrawNode():
     for col in range(0, max_cols):
       drawNode(row, col)
 
-testDrawNode()
+def testDrawLeg():
+  drawNode(4, 0)
+  drawNode(2, 2)
+  drawNode(6, 2)
+  drawLeftLeg(4, 0, 2, 2) 
+  drawRightLeg(4, 0, 6, 2) 
+
+testDrawLeg()
+
+#testDrawNode()
 # testPlotDotOnCircle()
 #circle(200, 200, 20)
 
