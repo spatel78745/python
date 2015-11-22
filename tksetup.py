@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import math
+import time
 
 #
 # Config
@@ -88,9 +89,10 @@ def row_to_x(row):
 def col_to_y(col):
   return box_size * col
 
-def drawNode(row, col):
+def drawNode(row, col, key = "?"):
   xc, yc = box_center(row, col) 
   drawCircle((xc, yc, RADIUS))
+  canvas.create_text(xc, yc, text = key)
 
 def drawLeftLeg(row1, col1, row2, col2):
   xc1, yc1 = box_center(row1, col1)
@@ -158,7 +160,7 @@ def testDrawLeg():
 #  drawNode(42, 2)
 
 
-testDrawLeg()
+# testDrawLeg()
 
 #testDrawNode()
 # testPlotDotOnCircle()
