@@ -70,6 +70,12 @@ def box_center(row, col):
 def box_size():
     return 2 * PAD + 2 * RADIUS
 
+def num_rows():
+    return CANVAS_HEIGHT / box_size()
+
+def num_cols():
+    return CANVAS_WIDTH / box_size()
+
 def row_to_x(row):
     return box_size() * row
 
@@ -168,7 +174,10 @@ def treePlotResponder(msg):
         print('drawRightLeg row: ', row1, 'col: ', col1, 'row2: ', row2, 'col2: ', col2)
         drawRightLeg(int(row1), int(col1), int(row2), int(col2))
         return 'ok\n'
-    
+
+    if words[0] == 'dim':
+        return '%d %d\n' % (num_rows(), num_cols())
+        
     return 'err\n'
 
 def testTreePlotResponder():
