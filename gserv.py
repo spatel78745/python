@@ -4,11 +4,9 @@ Created on Nov 21, 2015
 @author: spatel78745
 '''
 
+import _thread as thread, math, pysock
 from tkinter import Tk, Canvas
 from tkinter.constants import N,W,E,S
-
-import math
-import pysock
 
 #
 # Config
@@ -184,7 +182,7 @@ if __name__ == '__main__':
 #    testDrawLeg()
 #    print('Hello World')
 #    pysock.server(pysock.echoResponder)
-    cmd = pysock.server(treePlotResponder)
-    while(cmd != 'exit'):
-        cmd = pysock.server(treePlotResponder)
+    thread.start_new_thread(pysock.server, (treePlotResponder,))
+    root.mainloop()
+    
         

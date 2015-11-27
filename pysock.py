@@ -1,3 +1,4 @@
+import _thread as thread, time
 from socket import *
 
 myHost = ''
@@ -16,7 +17,7 @@ def server(responder):
     
     while True:
         data = connection.recv(1024).rstrip()
-        if (not data):
+        if not data:
             print("Connection closed.")
             break
         
@@ -43,4 +44,9 @@ def client(*args):
 if __name__ == '__main__':
 #    client('all composite phenomena are impermanent\n',
 #           'all contaminated things and events are unsatisfactory\n')
-    server(echoResponder)
+##    server(echoResponder)
+    print('Starting new thread.')
+    thread.start_new_thread(server, (echoResponder,))
+    time.sleep(60)
+    
+    
