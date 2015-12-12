@@ -1,6 +1,11 @@
 import socket
 import sys
 import inspect
+import datetime
+
+class RemoteSocketClosedError(OSError):
+    def __init__(self):
+        Exception.__init__(self, 'Remote socket closed')
 
 """
 Java-style client socket. You can use it to connect to a server socket, or a
@@ -11,22 +16,25 @@ class ClientSocket:
     STATE_CONNECTED = 'connected'
     STATE_DISCONNECTED = 'disconnected'
     
-    def __init__(self, host='', port=''):
-        self.host = host
-        self.port = port
-        self.state = ClientSocket.STATE_DISCONNECTED
-
     """
     Returns a string description of the connection
     """
     def __str__(self):
         return '%s:%d %s' % (self.host, self.port, self.state)
 
-    def log(self, msg):
-        return '(%s) %s [%s]' % (inspect.stack()[1][3], msg, self)
+    def log(self, msg, caller = None):
+        caller = inspect.stack()[1][3] if caller is None else caller
+##        return '%s %s %s [%s]' % (datetime.datetime.now(), caller, msg, self)
+        return '%s [%s] [%s]' % (caller, msg, self)
     
     def dlog(self, msg):
-        if __debug__: print(log(msg))
+        if __debug__: print(self.log(msg, inspect.stack()[1][3]))
+        
+    def __init__(self, host='', port=''):
+        self.host = host
+        self.port = port
+        self.state = ClientSocket.STATE_DISCONNECTED
+        self.dlog('New instance')
 
     def setSocket(self, sock):
         self.sock = sock
@@ -62,36 +70,38 @@ class ClientSocket:
         if self.sock is None:
             raise OSError(self.log('Failed to connect'))
 
-        dlog('Connected')
-##
-##    """
-##    Immediately closes the connection
-##    """
-##    def close(self):
-##        self.sock.shutdown()
-##        self.sock.close()
-##        if __debug__: print('Closed %s:%s' (
-##
-##    """
-##    Reads a character from this socket
-##
-##    Pre:
-##    - self.sock is connected
-##
-##    Post:
-##    - If the character is read successfully, returns it as a string
-##    - If the remote end closes, raises OSError
-##    - If there is an exception, closes the socket and propagates the exception
-##    """
-##    def read(self)
-##        try:
-##            c = self.sock.recv(1)
-##            if not c raise OSError('Remote end closed')
-##        except OSError:
-##            self.sock.close()
-##            raise
-##        else:
-##            return c.decode()
+        self.state = ClientSocket.STATE_CONNECTED
+        self.dlog('Connected')
+
+    """
+    Immediately closes the connection
+    """
+    def close(self):
+        self.sock.shutdown(socket.SHUT_RDWR)
+        self.sock.close()
+        self.state = ClientSocket.STATE_DISCONNECTED
+        self.dlog('Closed')
+
+    """
+    Reads a character from this socket
+
+    Pre:
+    - self.sock is connected
+
+    Post:
+    - If the character is read successfully, returns it as a string
+    - If the remote end closes, raises OSError
+    - If there is an exception, closes the socket and propagates the exception
+    """
+    def read(self):
+        try:
+            c = self.sock.recv(1)
+            if not c: raise RemoteSocketClosedError
+        except OSError:
+            self.sock.close()
+            raise
+        else:
+            return c.decode()
 ##
 ##    """
 ##    Reads a line from this socket.
@@ -151,7 +161,7 @@ def pf(result, testSummary, exception=None):
           % (testSummary,  resMsg, errMsg))
 
 def testConnectNoServer():
-    testSummary = 'connect(), no server'
+    testSummary = 'connect() to an invalid server'
     c = ClientSocket(HOST, PORT_NO_SERVER)
     try:
         c.connect()
@@ -160,13 +170,38 @@ def testConnectNoServer():
     else:
         pf(False, testSummary)
 
-##def testConnectToServer():
-##    input('Start a server on : %d. Press <Enter> when done' % PORT)
-##    c = ClientSocket(HOST, PORT)
-##    try:            c.connect()
-##    except OSError: pf(False)
-##    else:           pf(True)
-##    
+def testConnectToServer():
+    testSummary = 'connect() to valid server'
+    input('Start a server on [:%d]. Press <Enter> when done\n' % PORT)
+    c = ClientSocket(HOST, PORT)
+    try:
+        c.connect()
+    except OSError as ose:
+        pf(False, testSummary, ose)
+    else:
+        pf(True, testSummary)
+        c.close()
+
+def testReadChar():
+    testSummary = 'read() a character from the socket'
+    input('Start a server on [:%d]. Press <Enter> when done\n' % PORT)
+    c = ClientSocket(HOST, PORT)
+    try:
+        c.connect()
+    except OSError as ose:
+        pf(False, testSummary, ose)
+        return
+
+    print('Wait 5 seconds, then terminate the server')
+    try:
+        res = c.read()
+    except RemoteSocketClosedError as rsce:
+        pf(True, testSummary, rsce)
+    except OSError as ose:
+        pf(False, testSummary, ose)
+    else:
+        pf(False, testSummary, 'No exception')
+            
 ##def testIo():
 ##    c = ClientSocket(HOST, PORT);
 ##    try:            c.connect()
@@ -183,7 +218,6 @@ def testConnectNoServer():
 ##    
 
 if __name__ == '__main__':
-    print('begin')
-    testConnectNoServer()
+##    testConnectNoServer()
 ##    testConnectToServer()
-    
+    testReadChar()    
