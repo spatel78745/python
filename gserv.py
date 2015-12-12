@@ -148,6 +148,7 @@ def testDrawLeg():
     drawRightLeg(1, cx + cx1, 2, cx + cx1 + cx2)
 
 def treePlotResponder(msg):
+    print('GOT: ', msg)
     words = msg.split()
     if words[0] == 'drawNode':
         row = words[1]
@@ -155,7 +156,7 @@ def treePlotResponder(msg):
         key = words[3]
         print('drawNode row: ', row, 'col: ', col, 'key: ', key)
         drawNode(int(row), int(col), key)
-        return 'ok\n'
+        return 'err\n'
     
     if words[0] == 'drawLeftLeg':
         row1 = words[1]
@@ -194,4 +195,3 @@ if __name__ == '__main__':
     thread.start_new_thread(pysock.server, (treePlotResponder,))
     root.mainloop()
     
-        
