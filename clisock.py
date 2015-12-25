@@ -192,6 +192,23 @@ def testReadChar():
         pf(False, testSummary, ose)
         return
 
+    input('Send a Z from the server. Press <Enter> when done')
+    err = None
+    try:
+        res = c.read()
+    except OSError as ose:
+        err = ose
+
+    if err:
+        pf(False, testSummary, err)
+        c.close()
+        return
+    
+    if res != 'Z':
+        pf(False, testSummary, 'expected Z, got %s', res)
+
+    pf(True, testSummary, 'expected Z, got %s', res)
+
     print('Wait 5 seconds, then terminate the server')
     try:
         res = c.read()
